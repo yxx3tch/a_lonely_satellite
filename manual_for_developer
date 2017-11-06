@@ -1,0 +1,80 @@
+///////////////////////
+
+Lonely Satellite
+	developer manual		
+
+///////////////////////
+							制作:1W130560 八木陽介
+
+＜全体の流れ＞
+このゲームには、スタート画面、ゲーム画面、ゲームオーバー画面、ゲームクリアー画面という4つの状態が存在する。
+本プログラムではそれをphaseという変数で管理している。
+・phase = 0 のとき、スタート画面
+・phase = 1 のとき、ゲーム画面
+・phase = 2 のとき、ゲームオーバー画面
+・phase = 3 のとき、ゲームクリアー画面
+となっており、適宜phaseの値を変更することで、この切り替えを図っている。
+
+＜特徴＞
+（座標系について）
+本ゲームでは、直交座標を極座標的に扱うため、各機体に対して、偏角(arg)と半径(rad)というパラメーターを設定している。
+また、座標原点を画面左上から画面中央に移動するための変換を各機体や、自機の発射する弾について行っており、基本的な手続きは、
+		px=(int)(d.width/2*my_x+d.width/2);
+		py=(int)(d.height/2-d.height/2*my_y);
+のように示される（これは自機の座標変換の例である）。変換後の座標にはpという文字をつけて区別している。
+
+（操作について）
+本ゲームでもっとも特徴的と思われるのがマウスのホイールを用いた移動であるが、これはJPanelにMouseWheelListenerといいうコンポーネントをaddすることで比較的容易に実現できた。しかし、マウスホイールの可動量が、PC内の描画にどう反映されるかは、マウスそのものの機種やOSによるところも大きいので、同じパラメータでは、ゲームがクリア不可能になるほど操作に不具合我生じる可能性がある。その場合は、ホイールの移動量を取得しているe.getWheelRotation()*0.05の、0.05の部分を適宜変更することで対応できる。
+
+
+
+＜使用変数等＞
+　＜自機関連＞
+	double my_x,my_y;	自機のx座標、y座標（変換前）
+	int px,py;		自機のx座標、y座標（変換後）
+	double my_arg;	自機の偏角
+
+　＜敵機関連＞
+	int n = 36;			敵機数	
+	double teki_x[];	敵機x座標（変換前）
+	double teki_y[];	敵機y座標（変換後）
+	double teki_arg[];	敵機偏角
+	int teki_rad[];	敵機行動半径
+	int teki_initx[];	敵機x座標（初期配置位置）
+	int teki_inity[];	敵機y座標（初期配置位置）
+	int teki_px[];	敵機x座標（変換後）
+	int teki_py[] ;	敵機y座標（変換後）
+	int teki_move[];	敵機移動距離（方向指示も兼ねる）
+	int teki_alive[]; 	敵機生存フラグ
+	int num_of_alive;	敵機生存数（0でゲームクリアー）
+
+　＜自機ミサイル関連＞
+	int num_missile = 5;		同時発射可能ミサイル数
+	double my_missile_arg[];	ミサイル偏角
+	double my_missile_rad[];	ミサイル半径
+	double my_missile_x[];	ミサイルx座標
+	double my_missile_y[];	ミサイルy座標
+	int my_missile_inix[];	ミサイル発射位置x座標
+	int my_missile_iniy[];	ミサイル発射位置y座標
+	int my_missile_px[];		ミサイルx座標（変換後）
+	int my_missile_py[];		ミサイルy座標（変換後）
+	int missile_flag[];		ミサイル発射中フラグ
+
+　＜色＆衝撃波関連＞
+	int num_color;	自機＆バリア色変更用(0-4の値に応じて色が決まる)
+	int wave_rad[];	衝撃波半径
+	int wave_flag[];	衝撃波発射中フラグ
+	int wave_color[];	衝撃波色格納用（ランダムに0-4の数字が代入され、それによって色づけされる）
+	int wave_num;		発射中の衝撃波番号（0-3の範囲で変化し、番号に応じて違う隅から発射される）
+	int wave_move;	衝撃波移動距離
+	int wave_speed;	衝撃波移動速度加速用（ループするごとにwave_moveに加算される）
+	boolean damage;	衝撃波被ダメージ判定用（ダメージを喰らったときにtrue）
+
+＜その他、演出用など＞
+	int earth_life = 5;	残り体力
+	int my_dir;		スタート、ゲームオーバー、ゲームクリアー画面時の方向指示用
+	int end_rad;		ゲームオーバー時の演出用（衛星が徐々に画面外に飛んでいく）
+	Random rnd;		乱数生成用
+
+
+			
